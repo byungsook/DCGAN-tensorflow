@@ -12,7 +12,7 @@ import matplotlib.animation as animation
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--log_dir", type=str, default='data')
+parser.add_argument("--log_dir", type=str, default='../data/velocity')
 parser.add_argument("--path_format", type=str, default='v_%d_%d_%d.txt')
 parser.add_argument("--num_src_x_pos", type=int, default=10)
 parser.add_argument("--min_src_x_pos", type=float, default=0.2)
@@ -38,10 +38,9 @@ def read_vel(p1, p2, sim_id, v_max):
     return U, V
 
 
-def main():
+def main(p1, p2):
+    print(p1, p2)
     res = args.resolution
-    p1 = 4
-    p2 = 4
     try:
         v_max = np.loadtxt(os.path.join(args.log_dir, 'v_max.txt'))
     except:
@@ -49,17 +48,25 @@ def main():
 
     start = p1 * args.num_src_radius * args.num_frames + p2 * args.num_frames
     end = start + args.num_frames
-
+    step = args.num_frames / 10
     # start = end -1
 
     X, Y = np.meshgrid(np.arange(0, res), np.arange(0, res))
 
     fig = plt.figure()
+    mng = plt.get_current_fig_manager()
+    try:
+        mng.resize(*mng.window.maxsize())
+        # mng.frame.Maximize(True)
+    except:
+        mng.window.showMaximized()
+        # mng.window.state('zoomed') # windows
+
     # plt.ion()
     # plt.show()
 
     im = [None, None, None]
-    for sim_id in xrange(start,end):
+    for sim_id in xrange(start,end,step):
         U, V = read_vel(p1, p2, sim_id, v_max)
         
         plt.subplot(131)
@@ -108,11 +115,19 @@ if __name__ == '__main__':
     # if release mode, change current path
     working_path = os.getcwd()
     if working_path.endswith('dev'):
-        working_path = os.path.join(working_path, 'fluid_feature')
+        working_path = os.path.join(working_path, 'fluid_feature/code')
         os.chdir(working_path)
     else:
         working_path = os.path.join(working_path, '..')
         os.chdir(working_path)
 
-    main()
+    print(working_path)
+    print('p1: pos, p2: src size')
+    main(p1=0, p2=4)
+    main(p1=4, p2=4)
+    main(p1=9, p2=4)    
+    
+    main(p1=4, p2=0)
+    main(p1=4, p2=4)
+    main(p1=4, p2=9)
 

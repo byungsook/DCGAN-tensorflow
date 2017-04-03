@@ -43,7 +43,7 @@ def train():
     ### build a network
     image_dims = [FLAGS.image_size, FLAGS.image_size, FLAGS.image_depth]
     x = tf.placeholder(dtype=tf.float32, shape=[FLAGS.batch_size]+image_dims, name='x')
-    z = tf.placeholder(dtype=tf.float32, shape=[FLAGS.batch_size,FLAGS.z_dim], name='z')
+    z = tf.placeholder(dtype=tf.float32, shape=[FLAGS.batch_size, FLAGS.z_dim], name='z')
     y_logits, y, y_fake_logits, y_fake = model.build_model(x, z)
 
     ### losses
@@ -103,6 +103,10 @@ def train():
     ### create sampler for testing
     sample = model.generator(z, sample=True)
     x_sample, z_sample = batch_manager.batch()
+    # z = [-1,-1,-1:1]
+    z_sample[:,:2] = -1
+    z_sample[:,2] = np.linspace(-1, 1, FLAGS.batch_size)
+    
     sample_dim = [FLAGS.batch_size, FLAGS.image_size, FLAGS.image_size, 1]
     sample_x = tf.placeholder(dtype=tf.float32, shape=sample_dim)
     sample_y = tf.placeholder(dtype=tf.float32, shape=sample_dim)
@@ -155,8 +159,8 @@ def train():
             x_summary_tmp.ParseFromString(x_str)
             y_summary_tmp.ParseFromString(y_str)
             for i in xrange(FLAGS.max_images):
-                x_summary_tmp.value[i].tag = '%06d/%02d' % (step, i)
-                y_summary_tmp.value[i].tag = '%06d/%02d' % (step, i)
+                x_summary_tmp.value[i].tag = '%06d/%d' % (step, i)
+                y_summary_tmp.value[i].tag = '%06d/%d' % (step, i)
                 sample_x_writer.add_summary(x_summary_tmp, step)
                 sample_y_writer.add_summary(y_summary_tmp, step)
 

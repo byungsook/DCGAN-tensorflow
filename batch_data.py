@@ -24,7 +24,7 @@ flags.DEFINE_integer('image_depth', 2,
                      """The depth of image to use. [2]""")
 flags.DEFINE_integer('z_dim', 3,
                      """Dimension of z. [100]""")
-flags.DEFINE_string('data_dir', "../data",
+flags.DEFINE_string('data_dir', "../data/velocity",
                     """Directory of data set [*]""")
 flags.DEFINE_float('num_processors', multiprocessing.cpu_count(),
                    """maximum magnitude of velocity. [15]""")
@@ -49,6 +49,8 @@ class BatchManager(object):
         for _, _, self._data_list in os.walk(FLAGS.data_dir):
             break
 
+        self._data_list.sort()
+        
         # read data generation arguments
         self._args = {}
         with open(os.path.join(FLAGS.data_dir, self._data_list.pop(0)), 'r') as f:
