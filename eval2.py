@@ -127,7 +127,7 @@ def eval():
     sqr_bsize = int(FLAGS.batch_size ** 0.5) # 10
     assert(float(sqr_bsize) == FLAGS.batch_size ** 0.5)
     
-    for axis in xrange(2,3):
+    for axis in xrange(3):
         z_str = 'z%d' % (axis+1)
 
         linspc = np.linspace(-1, 1, sqr_bsize)    
